@@ -27,6 +27,8 @@
 #define ES_BSLS_MAC ALGR(KC_6)
 #define NO_PIPE_ALT KC_GRAVE
 #define NO_BSLS_ALT KC_EQUAL
+#define HYPER_F16 MT(MOD_HYPR, KC_F16)
+#define MEH_F16 MT(MOD_MEH, KC_F16)
 
 typedef struct {
   bool is_press_action;
@@ -45,16 +47,23 @@ enum {
 
 enum planck_keycodes {
   RGB_SLD = EZ_SAFE_RANGE,
-  QMKBEST,
+  RANSWORLD,
   EMDASH,
-  ENDASH
+  ENDASH,
+  CENT,
+  DEGREES,
+  MINUS1,
+  MINUS3,
 };
 
 //Tap Dance Declarations
 enum {
   CT_CLN = 0,
+  CT_APOST, //apostrophe, quote
+  APOST_CTL, //apostrophe, quote, ctrl, alt
+  SPACE_SHIFT, //tap space, hold shift, double tap hold space
   CT_SE,
-  X_CTL
+  X_CTL //x, esc, ctrl, alt
 };
 
 enum unicode_names {
@@ -65,9 +74,12 @@ enum unicode_names {
 
 int cur_dance (qk_tap_dance_state_t *state);
 
-//for the x tap dance. Put it here so it can be used in any keymap
 void x_finished (qk_tap_dance_state_t *state, void *user_data);
 void x_reset (qk_tap_dance_state_t *state, void *user_data);
+void apost_finished (qk_tap_dance_state_t *state, void *user_data);
+void apost_reset (qk_tap_dance_state_t *state, void *user_data);
+void space_finished (qk_tap_dance_state_t *state, void *user_data);
+void space_reset (qk_tap_dance_state_t *state, void *user_data);
 
 enum planck_layers {
   _BASE,
@@ -96,43 +108,328 @@ enum planck_layers {
 #define RAISE MO(_RAISE)
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
-  [_BASE] = LAYOUT_planck_grid(LT(15,KC_ESCAPE),KC_Q,KC_W,KC_F,KC_P,KC_B,KC_J,KC_L,KC_U,KC_Y,X(BANG),LT(14,KC_ENTER),LCTL_T(KC_TAB),LT(9,KC_A),LALT_T(KC_R),LGUI_T(KC_S),LSFT_T(KC_T),KC_G,KC_M,RSFT_T(KC_N),RGUI_T(KC_E),RALT_T(KC_I),LT(9,KC_O),RCTL_T(KC_QUOTE),MT(MOD_HYPR, KC_F16),LT(11,KC_Z),KC_X,KC_C,KC_D,KC_V,KC_K,KC_H,KC_COMMA,KC_DOT,KC_UP,TD(CT_CLN),LCTL_T(KC_F18),LALT_T(KC_F19),LGUI_T(KC_F17),LT(8,KC_DELETE),LT(1,KC_BSPACE),LSFT_T(KC_SPACE),KC_NO,LT(2,KC_ENTER),LT(13,KC_MINUS),KC_LEFT,KC_DOWN,TD(X_CTL)),
+/* LAYER = Mac Colemack
+   .-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------.
+   | L15/ESC      | Q            | W            | F            | P            | B            | J            | L            | U            | Y            | OSM SHIFT    | L14/ENTER    |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | CTRL/TAB     | L9/A         | ALT/T        | GUI/T        | SHIFT/T      | G            | M            | SHIFT/N      | GUI/E        | ALT/I        | L9/O         | APOST/QUOTE  |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | HYPER/F16    | L11/Z        | X            | C            | D            | V            | K            | H            | ,            | .            | UP           | COLON/SEMICLN|
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | CTRL/F17     | ALT/F18      | GUI/F19      | L8/DELETE    | LOWER/BACKSPC| SPACE                       | RAISE/ENTER  | L13/-        | LEFT         | DOWN         | RIGHT        |
+   '-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------'
+*/
+  [_BASE] = LAYOUT_planck_grid
+   (LT(15,KC_ESC) ,KC_Q          ,KC_W          ,KC_F          ,KC_P          ,KC_B          ,KC_J          ,KC_L          ,KC_U          ,KC_Y          ,OSM(MOD_LSFT) ,LT(14,KC_ENT) ,
+  	LCTL_T(KC_TAB),LT(9,KC_A)    ,LALT_T(KC_R)  ,LGUI_T(KC_S)  ,LSFT_T(KC_T)  ,KC_G          ,KC_M          ,RSFT_T(KC_N)  ,RGUI_T(KC_E)  ,RALT_T(KC_I)  ,LT(9,KC_O)    ,TD(CT_APOST)  ,
+  	HYPER_F16     ,LT(11,KC_Z)   ,KC_X          ,KC_C          ,KC_D          ,KC_V          ,KC_K          ,KC_H          ,KC_COMMA      ,KC_DOT        ,KC_UP         ,TD(CT_CLN)    ,
+  	LCTL_T(KC_F17),LALT_T(KC_F18),LGUI_T(KC_F19),LT(8,KC_DEL)  ,LT(1,KC_BSPC) ,KC_SPACE      ,KC_NO         ,LT(2,KC_ENT)  ,LT(13,KC_MINS),KC_LEFT       ,KC_DOWN       ,KC_RIGHT      ),
 
-  [_LOWER] = LAYOUT_planck_grid(KC_TRANSPARENT,LGUI(KC_DELETE),KC_HOME,KC_UP,KC_PGUP,LGUI(KC_2),KC_KP_SLASH,KC_KP_7,KC_KP_8,KC_KP_9,KC_MINUS,KC_TRANSPARENT,KC_TRANSPARENT,KC_BSPACE,KC_LEFT,KC_DOWN,KC_RIGHT,LGUI(KC_3),KC_ASTR,KC_KP_4,KC_KP_5,KC_KP_6,KC_KP_PLUS,KC_LBRACKET,KC_TRANSPARENT,KC_DELETE,KC_END,KC_TRANSPARENT,KC_PGDOWN,LGUI(LSFT(KC_4)),KC_PERC,KC_KP_1,KC_KP_2,KC_KP_3,KC_EQUAL,KC_RBRACKET,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_SPACE,KC_NO,KC_KP_0,KC_COMMA,KC_KP_DOT,KC_HOME,KC_END),
+/* LAYER = Mac Lower
+   .-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------.
+   |              | GUI+DEL      | HOME         | UP           | PGUP         | GUI+2        | /            | 7            | 8            | 9            | -            |              |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   |              | BACKSPACE    | LEFT         | DOWN         | RIGHT        | GUI+3        | *            | 4            | 5            | 6            | +            | [            |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   |              | DEL          | END          |              | PGDN         | GUI+SHIFT+4  | %            | 1            | 2            | 3            | =            | ]            |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   |              |              |              |              | XXXXXXXXXXXX | SHIFT/SPACE                 | 0            | ,            | .            | HOME         | END          |
+   '-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------'
+*/
+  [_LOWER] = LAYOUT_planck_grid
+   (_______       ,LGUI(KC_DEL)  ,KC_HOME       ,KC_UP         ,KC_PGUP       ,LGUI(KC_2)    ,KC_KP_SLASH   ,KC_KP_7       ,KC_KP_8       ,KC_KP_9       ,KC_MINS       ,_______       ,
+  	_______       ,KC_BSPC       ,KC_LEFT       ,KC_DOWN       ,KC_RIGHT      ,LGUI(KC_3)    ,KC_ASTR       ,KC_KP_4       ,KC_KP_5       ,KC_KP_6       ,KC_KP_PLUS    ,KC_LBRACKET   ,
+  	_______       ,KC_DEL        ,KC_END        ,_______       ,KC_PGDOWN     ,LGUI(LSFT(KC_4)),KC_PERC     ,KC_KP_1       ,KC_KP_2       ,KC_KP_3       ,KC_EQUAL      ,KC_RBRACKET   ,
+  	_______       ,_______       ,_______       ,_______       ,_______       ,LSFT_T(KC_SPACE),KC_NO       ,KC_KP_0       ,KC_COMMA      ,KC_KP_DOT     ,KC_HOME       ,KC_END        ),
 
-  [_RAISE] = LAYOUT_planck_grid(KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_PGUP,KC_UP,KC_HOME,KC_CAPSLOCK,KC_TRANSPARENT,KC_TRANSPARENT,KC_LCTRL,KC_LALT,KC_LGUI,KC_LSHIFT,KC_TRANSPARENT,KC_BSPACE,KC_LEFT,KC_DOWN,KC_RIGHT,KC_DELETE,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_PGDOWN,KC_TRANSPARENT,KC_END,KC_PGUP,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_SPACE,KC_NO,KC_TRANSPARENT,KC_TRANSPARENT,KC_HOME,KC_PGDOWN,KC_END),
+/* LAYER = Mac Raise
+   .-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------.
+   |              |              |              |              |              |              |              | PGUP         | UP           | HOME         | CAPSLOCK     |              |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   |              | CTRL         | ALT          | GUI          | SHIFT        |              | BACKSPACE    | LEFT         | DOWN         | RIGHT        | DELETE       |              |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   |              |              |              |              |              |              |              | PGDN         |              | END          | PGUP         |              |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   |              |              |              |              |              | SHIFT/SPACE                 | XXXXXXXXXXXX |              | HOME         | PGDN         | END          |
+   '-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------'
+*/
+  [_RAISE] = LAYOUT_planck_grid
+   (_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,KC_PGUP       ,KC_UP         ,KC_HOME       ,KC_CAPSLOCK   ,_______       ,
+   	_______       ,KC_LCTRL      ,KC_LALT       ,KC_LGUI       ,KC_LSHIFT     ,_______       ,KC_BSPC       ,KC_LEFT       ,KC_DOWN       ,KC_RIGHT      ,KC_DEL        ,_______       ,
+  	_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,KC_PGDOWN     ,_______       ,KC_END        ,KC_PGUP       ,_______       ,
+  	_______       ,_______       ,_______       ,_______       ,_______       ,LSFT_T(KC_SPACE),KC_NO       ,_______       ,_______       ,KC_HOME       ,KC_PGDOWN     ,KC_END        ),
 
-  [_ADJUST] = LAYOUT_planck_grid(RGB_HUI,RGB_HUD,AU_TOG,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,RESET,RGB_VAI,RGB_VAD,MU_TOG,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,RGB_MOD,RGB_SLD,MU_MOD,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,TOGGLE_LAYER_COLOR,RGB_TOG,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_SPACE,KC_NO,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT),
+/* LAYER = Adjust
+   .-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------.
+   | HUE +        | HUE -        | AUDIO TOGGLE |              |              |              |              |              |              |              |              | RESET        |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | BRIGHTNESS + | BRIGHTNESS - | MUSIC TOGGLE |              |              |              |              |              |              |              |              |              |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | SWTCH ANIMAT | STOP ANIMATI | MUSIC MODE   |              |              |              |              |              |              |              |              |              |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | TOG LAYR COL | TOGGLE LIGHT |              |              | XXXXXXXXXXXX |                             | XXXXXXXXXXXX |              |              |              |              |
+   '-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------'
+*/
+  [_ADJUST] = LAYOUT_planck_grid
+   (RGB_HUI       ,RGB_HUD       ,AU_TOG        ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,RESET         ,
+  	RGB_VAI       ,RGB_VAD       ,MU_TOG        ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,
+  	RGB_MOD       ,RGB_SLD       ,MU_MOD        ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,
+  	TOGGLE_LAYER_COLOR,RGB_TOG   ,_______       ,_______       ,_______       ,KC_SPACE      ,KC_NO         ,_______       ,_______       ,_______       ,_______       ,_______       ),
 
-  [_LAYER4] = LAYOUT_planck_grid(LT(15,KC_ESCAPE),KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,LCTL_T(KC_TAB),LT(10,KC_A),KC_TRANSPARENT,LCTL_T(KC_S),KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,RCTL_T(KC_E),KC_TRANSPARENT,LT(10,KC_O),RCTL_T(KC_QUOTE),MT(MOD_MEH, KC_F16),LT(12,KC_Z),KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_LGUI,KC_TRANSPARENT,LT(5,KC_BSPACE),KC_TRANSPARENT,KC_NO,LT(6,KC_ENTER),KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT),
+/* LAYER = PC Colemack
+   .-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------.
+   | L15/ESC      |              |              |              |              |              |              |              |              |              |              |              |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   |              | L10/A        |              | CTRL/S       |              |              |              |              | CTRL/E       |              | L10/O        |              |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | MEH/F16      | L12/Z        |              |              |              |              |              |              |              |              |              |              |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   |              |              | GUI          |              | L5/BACKSPACE |                             | L6/ENTER     |              |              |              |              |
+   '-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------'
+*/
+  [_LAYER4] = LAYOUT_planck_grid
+   (LT(15,KC_ESC) ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,
+  	LCTL_T(KC_TAB),LT(10,KC_A)   ,_______       ,LCTL_T(KC_S)  ,_______       ,_______       ,_______       ,_______       ,RCTL_T(KC_E)  ,_______       ,LT(10,KC_O)   ,_______       ,
+  	MEH_F16       ,LT(12,KC_Z)   ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,
+  	_______       ,_______       ,KC_LGUI       ,_______       ,LT(5,KC_BSPC) ,_______       ,KC_NO         ,LT(6,KC_ENT)  ,_______       ,_______       ,_______       ,_______       ),
 
-  [_LAYER5] = LAYOUT_planck_grid(KC_TRANSPARENT,KC_TRANSPARENT,KC_HOME,KC_UP,KC_PGUP,KC_TRANSPARENT,KC_KP_SLASH,KC_KP_7,KC_KP_8,KC_KP_9,KC_MINUS,KC_TRANSPARENT,KC_TRANSPARENT,KC_BSPACE,KC_LEFT,KC_DOWN,KC_RIGHT,KC_TRANSPARENT,KC_KP_ASTERISK,KC_KP_4,KC_KP_5,KC_KP_6,KC_KP_PLUS,KC_LBRACKET,KC_TRANSPARENT,KC_DELETE,KC_END,KC_TRANSPARENT,KC_PGDOWN,KC_TRANSPARENT,KC_PERC,KC_KP_1,KC_KP_2,KC_KP_3,KC_EQUAL,KC_RBRACKET,KC_TRANSPARENT,KC_TRANSPARENT,KC_LGUI,KC_TRANSPARENT,KC_TRANSPARENT,KC_SPACE,KC_NO,KC_KP_0,KC_COMMA,KC_KP_DOT,KC_HOME,KC_END),
+/* LAYER = PC Lower
+   .-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------.
+   |              |              | HOME         | UP           | PGDN         |              | /            | 7            | 8            | 9            | -            |              |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   |              | BACKSPACE    | LEFT         | DOWN         | RIGHT        |              | *            | 4            | 5            | 6            | +            | [            |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   |              | DEL          | END          |              | PGDN         |              | %            | 1            | 2            | 3            | =            | ]            |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   |              |              | GUI          |              | XXXXXXXXXXXX |                             | 0            | ,            | .            | HOME         | END          |
+   '-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------'
+*/
+  [_LAYER5] = LAYOUT_planck_grid
+   (_______       ,_______       ,KC_HOME       ,KC_UP         ,KC_PGUP       ,_______       ,KC_KP_SLASH   ,KC_KP_7       ,KC_KP_8       ,KC_KP_9       ,KC_MINS       ,_______       ,
+  	_______       ,KC_BSPC       ,KC_LEFT       ,KC_DOWN       ,KC_RIGHT      ,_______       ,KC_KP_ASTERISK,KC_KP_4       ,KC_KP_5       ,KC_KP_6       ,KC_KP_PLUS    ,KC_LBRACKET   ,
+  	_______       ,KC_DEL        ,KC_END        ,_______       ,KC_PGDOWN     ,_______       ,KC_PERC       ,KC_KP_1       ,KC_KP_2       ,KC_KP_3       ,KC_EQUAL      ,KC_RBRACKET   ,
+  	_______       ,_______       ,KC_LGUI       ,_______       ,_______       ,LSFT_T(KC_SPACE),KC_NO       ,KC_KP_0       ,KC_COMMA      ,KC_KP_DOT     ,KC_HOME       ,KC_END)       ,
 
-  [_LAYER6] = LAYOUT_planck_grid(KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_PGUP,KC_UP,KC_HOME,KC_CAPSLOCK,KC_TRANSPARENT,KC_TRANSPARENT,KC_LGUI,KC_LALT,KC_LCTRL,KC_LSHIFT,KC_TRANSPARENT,KC_BSPACE,KC_LEFT,KC_DOWN,KC_RIGHT,KC_DELETE,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_PGDOWN,KC_TRANSPARENT,KC_END,KC_PGUP,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_LGUI,KC_TRANSPARENT,KC_TRANSPARENT,KC_SPACE,KC_NO,KC_TRANSPARENT,KC_TRANSPARENT,KC_HOME,KC_PGDOWN,KC_END),
+/* LAYER = PC Raise
+   .-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------.
+   |              |              |              |              |              |              |              | PGUP         | UP           | HOME         | CAPSLOCK     |              |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   |              | GUI          | ALT          | CTRL         | SHIFT        |              | BACKSPACE    | LEFT         | DOWN         | RIGHT        | DEL          |              |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   |              |              |              |              |              |              |              | PGDN         |              | END          | PGUP         |              |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   |              |              | GUI          |              |              |                             | XXXXXXXXXXXX |              | HOME         | PGDN         | END          |
+   '-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------'
+*/
+  [_LAYER6] = LAYOUT_planck_grid
+   (_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,KC_PGUP       ,KC_UP         ,KC_HOME       ,KC_CAPSLOCK   ,_______       ,
+  	_______       ,KC_LGUI       ,KC_LALT       ,KC_LCTRL      ,KC_LSHIFT     ,_______       ,KC_BSPC       ,KC_LEFT       ,KC_DOWN       ,KC_RIGHT      ,KC_DEL        ,_______       ,
+  	_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,KC_PGDOWN     ,_______       ,KC_END        ,KC_PGUP       ,_______       ,
+  	_______       ,_______       ,KC_LGUI       ,_______       ,_______       ,LSFT_T(KC_SPACE),KC_NO       ,_______       ,_______       ,KC_HOME       ,KC_PGDOWN     ,KC_END)       ,
 
-  [_LAYER7] = LAYOUT_planck_grid(KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_NO,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT),
+/* LAYER = Spare
+   .-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------.
+   |              |              |              |              |              |              |              |              |              |              |              |              |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   |              |              |              |              |              |              |              |              |              |              |              |              |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   |              |              |              |              |              |              |              |              |              |              |              |              |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   |              |              |              |              |              |                             |              |              |              |              |              |
+   '-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------'
+*/
+  [_LAYER7] = LAYOUT_planck_grid
+   (_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,
+  	_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,
+  	_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,
+  	_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,KC_NO         ,_______       ,_______       ,_______       ,_______       ,_______       ),
 
-  [_LAYER8] = LAYOUT_planck_grid(KC_MINUS,KC_PLUS,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_KP_7,KC_KP_8,KC_KP_9,KC_TRANSPARENT,KC_TRANSPARENT,KC_5,KC_4,KC_3,KC_2,KC_1,KC_TRANSPARENT,LALT(LCTL(LGUI(LSFT(KC_U)))),KC_KP_4,KC_KP_5,KC_KP_6,LALT(LCTL(LGUI(LSFT(KC_D)))),KC_TRANSPARENT,KC_0,KC_9,KC_8,KC_7,KC_6,KC_TRANSPARENT,LALT(LCTL(LGUI(LSFT(KC_I)))),KC_KP_1,KC_KP_2,KC_KP_3,KC_PGUP,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,LALT(LCTL(LGUI(LSFT(KC_Y)))),KC_NO,KC_KP_0,KC_TRANSPARENT,KC_HOME,KC_PGDOWN,KC_END),
+/* LAYER = Left-hand numbers and job clock-on macros
+   .-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------.
+   | -            | =            | 9            | 8            | 7            |              |              | 7            | 8            | 9            |              |              |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   |              | -3           | 6            | 5            | 4            |              | HYPER+U      | 4            | 5            | 6            | HYPER+D      |              |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   |              | -1           | 3            | 2            | 1            | 0            | HYPER+I      | 1            | 2            | 3            | PGUP         |              |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   |              |              |              |              | 0            | HYPER Y                     | 0            |              | HOME         | PGDN         | END          |
+   '-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------'
+*/
+  [_LAYER8] = LAYOUT_planck_grid
+   (KC_MINS       ,KC_PLUS       ,KC_KP_9       ,KC_KP_8       ,KC_KP_7       ,_______       ,_______       ,KC_KP_7       ,KC_KP_8       ,KC_KP_9       ,_______       ,_______       ,
+  	_______       ,MINUS3        ,KC_KP_6       ,KC_KP_5       ,KC_KP_4       ,_______       ,HYPR(KC_U)    ,KC_KP_4       ,KC_KP_5       ,KC_KP_6       ,HYPR(KC_D)    ,_______       ,
+  	_______       ,MINUS1        ,KC_KP_3       ,KC_KP_2       ,KC_KP_1       ,KC_KP_0       ,HYPR(KC_I)    ,KC_KP_1       ,KC_KP_2       ,KC_KP_3       ,KC_PGUP       ,_______       ,
+  	_______       ,_______       ,_______       ,_______       ,KC_KP_0       ,HYPR(KC_Y)    ,KC_NO         ,KC_KP_0       ,_______       ,KC_HOME       ,KC_PGDOWN     ,KC_END)       ,
 
-  [_LAYER9] = LAYOUT_planck_grid(KC_TRANSPARENT,KC_TRANSPARENT,LALT(KC_8),KC_AMPR,KC_LBRACKET,KC_BSLASH,KC_GRAVE,KC_RBRACKET,KC_HASH,LALT(KC_MINUS),KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_EXLM,KC_QUES,KC_LPRN,KC_PIPE,KC_PERC,KC_RPRN,KC_DLR,KC_MINUS,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_UNDS,KC_AT,KC_LCBR,KC_SLASH,KC_TILD,KC_RCBR,LALT(KC_4),LALT(LSFT(KC_MINUS)),KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,LGUI(LSFT(KC_S)),LGUI(KC_S),LGUI(KC_O),KC_NO,KC_F12,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT),
+/* LAYER = Mac Symbols
+   .-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------.
+   |              |              | °            | &            | [            | \            | `            | ]            | #            | –            |              |              |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   |              | XXXXXXXXXXXX | !            | ?            | (            | |            | %            | )            | $            | -            | XXXXXXXXXXXX |              |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   |              |              | _            | @            | {            | /            | ~            | }            | ¢            | —            |              |              |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   |              |              |              | SAVE AS      | SAVE         | OPEN                        | F12          | ransworld@gm |              |              |              |
+   '-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------'
+*/
+  [_LAYER9] = LAYOUT_planck_grid
+   (_______       ,_______       ,LALT(LSFT(KC_8)),KC_AMPR     ,KC_LBRACKET   ,KC_BSLASH     ,KC_GRAVE      ,KC_RBRACKET   ,KC_HASH       ,LALT(KC_MINS) ,_______       ,_______       ,
+  	_______       ,_______       ,KC_EXLM       ,KC_QUES       ,KC_LPRN       ,KC_PIPE       ,KC_PERC       ,KC_RPRN       ,KC_DLR        ,KC_MINS       ,_______       ,_______       ,
+  	_______       ,_______       ,KC_UNDS       ,KC_AT         ,KC_LCBR       ,KC_SLASH      ,KC_TILD       ,KC_RCBR       ,LALT(KC_4)    ,LALT(LSFT(KC_MINS)),_______  ,_______       ,
+  	_______       ,_______       ,_______       ,LGUI(LSFT(KC_S)),LGUI(KC_S)  ,LGUI(KC_O)    ,KC_NO         ,KC_F12        ,RANSWORLD     ,_______       ,_______       ,_______       ),
 
-  [_LAYER10] = LAYOUT_planck_grid(KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_AMPR,KC_LBRACKET,KC_BSLASH,KC_GRAVE,KC_RBRACKET,KC_HASH,ENDASH,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_EXLM,KC_QUES,KC_LPRN,KC_PIPE,KC_PERC,KC_RPRN,KC_DLR,KC_MINUS,KC_TRANSPARENT,KC_TRANSPARENT,KC_MEH,KC_TRANSPARENT,KC_UNDS,KC_AT,KC_LCBR,KC_SLASH,KC_TILD,KC_RCBR,KC_TRANSPARENT,EMDASH,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,LCTL(LSFT(KC_S)),LCTL(KC_S),LCTL(KC_O),KC_NO,KC_F12,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT),
+/* LAYER = PC Symbols
+   .-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------.
+   |              |              | °            | &            | [            | \            | `            | ]            | #            | –            |              |              |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   |              | XXXXXXXXXXXX | !            | ?            | (            | |            | %            | )            | $            | -            | XXXXXXXXXXXX |              |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | MEH          |              | _            | @            | {            | /            | ~            | }            | ¢            | —            |              |              |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   |              |              |              | SAVE AS      | SAVE         | OPEN                        | F12          | ransworld@gm |              |              |              |
+   '-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------'
+*/
+  [_LAYER10] = LAYOUT_planck_grid
+   (_______       ,_______       ,DEGREES       ,KC_AMPR       ,KC_LBRACKET   ,KC_BSLASH     ,KC_GRAVE      ,KC_RBRACKET   ,KC_HASH       ,ENDASH        ,_______       ,_______       ,
+  	_______       ,_______       ,KC_EXLM       ,KC_QUES       ,KC_LPRN       ,KC_PIPE       ,KC_PERC       ,KC_RPRN       ,KC_DLR        ,KC_MINS       ,_______       ,_______       ,
+  	KC_MEH        ,_______       ,KC_UNDS       ,KC_AT         ,KC_LCBR       ,KC_SLASH      ,KC_TILD       ,KC_RCBR       ,CENT          ,EMDASH        ,_______       ,_______       ,
+  	_______       ,_______       ,_______       ,LCTL(LSFT(KC_S)),LCTL(KC_S)  ,LCTL(KC_O)    ,KC_NO         ,KC_F12        ,RANSWORLD     ,_______       ,_______       ,_______       ),
 
-  [_LAYER11] = LAYOUT_planck_grid(KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,LALT(LCTL(LGUI(LSFT(KC_K)))),KC_TRANSPARENT,KC_MAC_CUT,KC_MAC_COPY,KC_MAC_PASTE,LALT(LGUI(KC_V)),KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,LALT(KC_F4),LGUI(KC_Q),LGUI(KC_W),KC_NO,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT),
+/* LAYER = Mac Copy/Paste
+   .-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------.
+   |              |              |              |              |              |              |              |              |              |              |              |              |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   |              |              |              |              |              |              |              |              |              |              |              |              |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | HYPER+K      | XXXXXXXXXXXX | CUT          | COPY         | PASTE        | MOVE         |              |              |              |              |              |              |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   |              |              |              | ALT+F4       | QUIT         | CLOSE                       |              |              |              |              |              |
+   '-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------'
+*/
+  [_LAYER11] = LAYOUT_planck_grid
+   (_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,
+  	_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,
+  	HYPR(KC_K)    ,_______       ,KC_MAC_CUT    ,KC_MAC_COPY   ,KC_MAC_PASTE  ,LALT(LGUI(KC_V)),_______     ,_______       ,_______       ,_______       ,_______       ,_______       ,
+  	_______       ,_______       ,_______       ,LALT(KC_F4)   ,LGUI(KC_Q)    ,LGUI(KC_W)    ,KC_NO         ,_______       ,_______       ,_______       ,_______       ,_______       ),
 
-  [_LAYER12] = LAYOUT_planck_grid(KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_MEH,KC_TRANSPARENT,KC_PC_CUT,KC_PC_COPY,KC_PC_PASTE,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,LALT(KC_F4),LCTL(KC_Q),LCTL(KC_W),KC_NO,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT),
+/* LAYER = PC Copy/Paste
+   .-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------.
+   |              |              |              |              |              |              |              |              |              |              |              |              |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   |              |              |              |              |              |              |              |              |              |              |              |              |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | MEH          | XXXXXXXXXXXX | CUT          | COPY         | PASTE        |              |              |              |              |              |              |              |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   |              |              |              | ALT+F4       | QUIT         | CLOSE                       |              |              |              |              |              |
+   '-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------'
+*/
+  [_LAYER12] = LAYOUT_planck_grid
+   (_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,
+  	_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,
+  	KC_MEH        ,_______       ,KC_PC_CUT     ,KC_PC_COPY    ,KC_PC_PASTE   ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,
+  	_______       ,_______       ,_______       ,LALT(KC_F4)   ,LCTL(KC_Q)    ,LCTL(KC_W)    ,KC_NO         ,_______       ,_______       ,_______       ,_______       ,_______       ),
 
-  [_LAYER13] = LAYOUT_planck_grid(KC_TRANSPARENT,KC_TRANSPARENT,KC_F17,KC_F18,KC_F19,KC_TRANSPARENT,KC_TRANSPARENT,KC_F7,KC_F8,KC_F9,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_F14,KC_F15,KC_F16,KC_TRANSPARENT,KC_TRANSPARENT,KC_F4,KC_F5,KC_F6,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_F11,KC_F12,KC_F13,KC_TRANSPARENT,KC_TRANSPARENT,KC_F1,KC_F2,KC_F3,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_F20,KC_TRANSPARENT,KC_TRANSPARENT,KC_SPACE,KC_NO,KC_F10,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT),
+/* LAYER = Function Keys
+   .-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------.
+   |              |              | F17          | F18          | F19          |              |              | F7           | F8           | F9           |              |              |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   |              |              | F14          | F15          | F16          |              |              | F4           | F5           | F6           |              |              |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   |              |              | F11          | F12          | F13          |              |              | F1           | F2           | F3           |              |              |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   |              |              | F20          |              |              |                             | F10          | XXXXXXXXXXXX |              |              |              |
+   '-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------'
+*/
+  [_LAYER13] = LAYOUT_planck_grid
+   (_______       ,_______       ,KC_F17        ,KC_F18        ,KC_F19        ,_______       ,_______       ,KC_F7         ,KC_F8         ,KC_F9         ,_______       ,_______       ,
+  	_______       ,_______       ,KC_F14        ,KC_F15        ,KC_F16        ,_______       ,_______       ,KC_F4         ,KC_F5         ,KC_F6         ,_______       ,_______       ,
+  	_______       ,_______       ,KC_F11        ,KC_F12        ,KC_F13        ,_______       ,_______       ,KC_F1         ,KC_F2         ,KC_F3         ,_______       ,_______       ,
+  	_______       ,_______       ,KC_F20        ,_______       ,_______       ,KC_SPACE      ,KC_NO         ,KC_F10        ,_______       ,_______       ,_______       ,_______       ),
 
-  [_LAYER14] = LAYOUT_planck_grid(KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_AUDIO_MUTE,KC_AUDIO_VOL_DOWN,KC_AUDIO_VOL_UP,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_MEDIA_PREV_TRACK,KC_MEDIA_PLAY_PAUSE,KC_NO,KC_MEDIA_NEXT_TRACK,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT),
+/* LAYER = Media Keys
+   .-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------.
+   |              |              |              |              |              |              |              |              | MUTE         | VOL DOWN     | VOL UP       | XXXXXXXXXXXX |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   |              |              |              |              |              |              |              |              |              |              |              |              |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   |              |              |              |              |              |              |              |              |              |              |              |              |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   |              |              |              |              | PREVIOUS     | PLAY/PAUSE                  | NEXT         |              |              |              |              |
+   '-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------'
+*/
+  [_LAYER14] = LAYOUT_planck_grid
+   (_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,KC_AUDIO_MUTE ,KC_AUDIO_VOL_DOWN,KC_AUDIO_VOL_UP,_______   ,
+  	_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,
+  	_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,
+  	_______       ,_______       ,_______       ,_______       ,KC_MEDIA_PREV_TRACK,KC_MEDIA_PLAY_PAUSE,KC_NO,KC_MEDIA_NEXT_TRACK,_______ ,_______       ,_______       ,_______       ),
 
-  [_LAYER15] = LAYOUT_planck_grid(KC_TRANSPARENT,TO(0),TO(4),TT(17),TT(16),KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_SPACE,KC_NO,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT),
+/* LAYER = Direct
+   .-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------.
+   | XXXXXXXXXXXX | Mac Colemack | PC Colemack  | Gaming       | Mouse Keys   |              |              |              |              |              |              |              |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   |              |              |              |              |              |              |              |              |              |              |              |              |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   |              |              |              |              |              |              |              |              |              |              |              |              |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   |              |              |              |              |              |                             |              |              |              |              |              |
+   '-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------'
+*/
+  [_LAYER15] = LAYOUT_planck_grid
+   (_______       ,TO(0)         ,TO(4)         ,TT(17)        ,TT(16)        ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,
+  	_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,
+  	_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,
+  	_______       ,_______       ,_______       ,_______       ,_______       ,KC_SPACE      ,KC_NO         ,_______       ,_______       ,_______       ,_______       ,_______       ),
 
-  [_LAYER16] = LAYOUT_planck_grid(KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_MS_WH_UP,KC_MS_BTN1,KC_MS_UP,KC_MS_BTN2,KC_MS_ACCEL0,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_MS_BTN1,KC_MS_BTN2,KC_TRANSPARENT,KC_TRANSPARENT,KC_MS_WH_DOWN,KC_MS_LEFT,KC_MS_DOWN,KC_MS_RIGHT,KC_MS_ACCEL1,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_MS_WH_LEFT,KC_MS_WH_RIGHT,KC_TRANSPARENT,KC_TRANSPARENT,KC_MS_ACCEL2,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_SPACE,KC_NO,KC_TRANSPARENT,TO(15),KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT),
+/* LAYER = Mouse Keys
+   .-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------.
+   |              |              |              |              |              |              | WHEEL UP     | LEFT CLICK   | MOUSE UP     | RIGHT CLICK  | ACCEL 0      |              |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   |              |              | LEFT CLICK   | RIGHT CLICK  |              |              | WHEEL DOWN   | MOUSE LEFT   | MOUSE DOWN   | MOUSE RIGHT  | ACCEL 1      |              |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   |              |              |              |              |              |              | WHEEL LEFT   | WHEEL RIGHT  |              |              | ACCEL 2      |              |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   |              |              |              |              |              |                             |              | TO L15       |              |              |              |
+   '-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------'
+*/
+  [_LAYER16] = LAYOUT_planck_grid
+   (_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,KC_MS_WH_UP   ,KC_MS_BTN1    ,KC_MS_UP      ,KC_MS_BTN2    ,KC_MS_ACCEL0  ,_______       ,
+  	_______       ,_______       ,KC_MS_BTN1    ,KC_MS_BTN2    ,_______       ,_______       ,KC_MS_WH_DOWN ,KC_MS_LEFT    ,KC_MS_DOWN    ,KC_MS_RIGHT   ,KC_MS_ACCEL1  ,_______       ,
+  	_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,KC_MS_WH_LEFT ,KC_MS_WH_RIGHT,_______       ,_______       ,KC_MS_ACCEL2  ,_______       ,
+  	_______       ,_______       ,_______       ,_______       ,_______       ,KC_SPACE      ,KC_NO         ,_______       ,TO(15)        ,_______       ,_______       ,_______       ),
 
-  [_LAYER17] = LAYOUT_planck_grid(KC_BSPACE,KC_Q,KC_W,KC_E,KC_R,KC_T,KC_Y,KC_U,KC_I,KC_O,KC_P,KC_ENTER,KC_TAB,KC_A,KC_S,KC_D,KC_F,KC_G,KC_H,KC_J,KC_K,KC_L,KC_SCOLON,KC_QUOTE,KC_LSHIFT,KC_Z,KC_X,KC_C,KC_V,KC_B,KC_N,KC_M,KC_COMMA,KC_DOT,KC_TRANSPARENT,KC_DELETE,KC_LCTRL,KC_LALT,KC_LGUI,KC_ESCAPE,TT(18),KC_SPACE,KC_NO,KC_RCTRL,TO(15),KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT),
+/* LAYER = Gaming
+   .-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------.
+   |              |              |              |              |              |              |              |              |              |              |              |              |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   |              |              |              |              |              |              |              |              |              |              |              |              |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   |              |              |              |              |              |              |              |              |              |              |              |              |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   |              |              |              |              |              |                             |              |              |              |              |              |
+   '-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------'
+*/
+  [_LAYER17] = LAYOUT_planck_grid
+   (KC_BSPC       ,KC_Q          ,KC_W          ,KC_E          ,KC_R          ,KC_T          ,KC_Y          ,KC_U          ,KC_I          ,KC_O          ,KC_P          ,KC_ENT        ,
+  	KC_TAB        ,KC_A          ,KC_S          ,KC_D          ,KC_F          ,KC_G          ,KC_H          ,KC_J          ,KC_K          ,KC_L          ,KC_SCOLON     ,KC_QUOTE      ,
+  	KC_LSHIFT     ,KC_Z          ,KC_X          ,KC_C          ,KC_V          ,KC_B          ,KC_N          ,KC_M          ,KC_COMMA      ,KC_DOT        ,_______       ,KC_DEL        ,
+  	KC_LCTRL      ,KC_LALT       ,KC_LGUI       ,KC_ESC        ,TT(18)        ,KC_SPACE      ,KC_NO         ,KC_RCTRL      ,TO(15)        ,_______       ,_______       ,_______       ),
 
-  [_LAYER18] = LAYOUT_planck_grid(KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_KP_SLASH,KC_KP_7,KC_KP_8,KC_KP_9,KC_MINUS,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_KP_ASTERISK,KC_KP_4,KC_KP_5,KC_KP_6,KC_KP_PLUS,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_PERC,KC_KP_1,KC_KP_2,KC_KP_3,KC_EQUAL,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_TRANSPARENT,KC_SPACE,KC_NO,KC_KP_0,KC_COMMA,KC_DOT,KC_KP_ENTER,KC_TRANSPARENT),
+/* LAYER = Gaming Numbers
+   .-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------.
+   |              |              |              |              |              |              |              |              |              |              |              |              |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   |              |              |              |              |              |              |              |              |              |              |              |              |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   |              |              |              |              |              |              |              |              |              |              |              |              |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   |              |              |              |              |              |                             |              |              |              |              |              |
+   '-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------'
+*/
+  [_LAYER18] = LAYOUT_planck_grid
+   (_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,KC_KP_SLASH   ,KC_KP_7       ,KC_KP_8       ,KC_KP_9       ,KC_MINS       ,_______       ,
+  	_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,KC_KP_ASTERISK,KC_KP_4       ,KC_KP_5       ,KC_KP_6       ,KC_KP_PLUS    ,_______       ,
+  	_______       ,_______       ,_______       ,_______       ,_______       ,_______       ,KC_PERC       ,KC_KP_1       ,KC_KP_2       ,KC_KP_3       ,KC_EQUAL      ,_______       ,
+  	_______       ,_______       ,_______       ,_______       ,_______       ,KC_SPACE      ,KC_NO         ,KC_KP_0       ,KC_COMMA      ,KC_DOT        ,KC_KP_ENTER   ,_______       ),
 
 };
 
@@ -144,39 +441,295 @@ void keyboard_post_init_user(void) {
 }
 
 const uint8_t PROGMEM ledmap[][DRIVER_LED_TOTAL][3] = {
-    [1] = { {0,0,0}, {0,0,0}, {0,0,0}, {237,182,246}, {0,0,0}, {0,0,255}, {0,0,0}, {237,182,246}, {237,182,246}, {237,182,246}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {8,148,246}, {8,148,246}, {8,148,246}, {0,0,255}, {0,0,0}, {8,148,246}, {8,148,246}, {8,148,246}, {0,0,0}, {0,0,255}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,255}, {0,0,0}, {24,175,246}, {24,175,246}, {24,175,246}, {0,0,0}, {0,0,255}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {154,255,255}, {0,0,0}, {35,255,255}, {0,0,0}, {0,0,0}, {0,0,255}, {0,0,255} },
+    
+    /* LAYER = Mac Colemack
+   .-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------.
+   | L15 ESC      | Q            | W            | F            | P            | B            | J            | L            | U            | Y            | OSM SHIFT    | L14 ENTER    |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | CTRL TAB     | L9 A         | ALT T        | GUI T        | SHIFT T      | G            | M            | SHIFT N      | GUI E        | ALT I        | L9 O         | APOST QUOTE  |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | HYPER F16    | L11 Z        | X            | C            | D            | V            | K            | H            | COMMA        | FULL STOP    | UP           | COLON SEMICLN|
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | CTRL F17     | ALT F18      | GUI F19      | L8 DELETE    | LOWER BACKSPC| SPACE                       | RAISE ENTER  | L13 MINUS    | LEFT         | DOWN         | RIGHT        |
+   '-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------'
+*/
+    [1] = {
+    {0,0,0}       , {0,0,0}      , {0,0,0}      , {237,255,255}, {0,0,0}      , {0,0,255}    , {0,0,0}      , {237,255,255}, {237,255,255}, {237,255,255}, {0,0,0}      , {0,0,0}      , 
+    {0,0,0}       , {0,0,0}      , {8,255,255}  , {8,255,255}  , {8,255,255}  , {0,0,255}    , {0,0,0}      , {8,255,255}  , {8,255,255}  , {8,255,255}  , {0,0,0}      , {0,0,255}    , 
+    {0,0,0}       , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,255}    , {0,0,0}      , {24,255,255} , {24,255,255} , {24,255,255} , {0,0,0}      , {0,0,255}    , 
+    {0,0,0}       , {0,0,0}      , {0,0,0}      , {0,0,0}      , {170,230,255}, {0,0,0}                     , {35,255,255} , {0,0,0}      , {0,0,0}      , {0,0,255}    , {0,0,255}    },
 
-    [2] = { {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {237,182,246}, {0,0,0}, {0,0,255}, {0,0,0}, {0,0,0}, {105,255,255}, {249,228,255}, {35,255,255}, {154,255,255}, {0,0,0}, {0,0,0}, {8,148,246}, {8,148,246}, {8,148,246}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {154,255,255}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0} },
+/* LAYER = Mac Colemack
+   .-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------.
+   | L15 ESC      | Q            | W            | F            | P            | B            | J            | L            | U            | Y            | OSM SHIFT    | L14 ENTER    |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | CTRL TAB     | L9 A         | ALT T        | GUI T        | SHIFT T      | G            | M            | SHIFT N      | GUI E        | ALT I        | L9 O         | APOST QUOTE  |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | HYPER F16    | L11 Z        | X            | C            | D            | V            | K            | H            | COMMA        | FULL STOP    | UP           | COLON SEMICLN|
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | CTRL F18     | ALT F19      | GUI F17      | L8 DELETE    | LOWER BACKSPC| SPACE                       | RAISE ENTER  | L13 MINUS    | LEFT         | DOWN         | RIGHT        |
+   '-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------'
+*/
+    [2] = { 
+    {0,0,0}       , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {237,255,255}, {0,0,0}      , {0,0,255}    , {0,0,0}      , 
+    {0,0,0}       , {105,255,255}, {249,255,255}, {35,255,255} , {170,230,255}, {0,0,0}      , {0,0,0}      , {8,255,255}  , {8,255,255}  , {8,255,255}  , {0,0,0}      , {0,0,0}      , 
+    {0,0,0}       , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , 
+    {0,0,0}       , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}                     , {170,230,255}, {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      },
 
-    [3] = { {0,0,255}, {0,0,255}, {154,255,255}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,204,255}, {0,0,255}, {0,0,255}, {154,255,255}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,255}, {0,0,255}, {154,255,255}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,255}, {0,0,255}, {0,0,0}, {0,0,0}, {154,255,255}, {0,0,0}, {154,255,255}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0} },
+/* LAYER = Mac Colemack
+   .-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------.
+   | L15 ESC      | Q            | W            | F            | P            | B            | J            | L            | U            | Y            | OSM SHIFT    | L14 ENTER    |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | CTRL TAB     | L9 A         | ALT T        | GUI T        | SHIFT T      | G            | M            | SHIFT N      | GUI E        | ALT I        | L9 O         | APOST QUOTE  |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | HYPER F16    | L11 Z        | X            | C            | D            | V            | K            | H            | COMMA        | FULL STOP    | UP           | COLON SEMICLN|
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | CTRL F18     | ALT F19      | GUI F17      | L8 DELETE    | LOWER BACKSPC| SPACE                       | RAISE ENTER  | L13 MINUS    | LEFT         | DOWN         | RIGHT        |
+   '-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------'
+*/
+    [3] = { 
+    {0,0,255}     , {0,0,255}    , {170,230,255}, {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,255,255}  , 
+    {0,0,255}     , {0,0,255}    , {170,230,255}, {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , 
+    {0,0,255}     , {0,0,255}    , {170,230,255}, {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , 
+    {0,0,255}     , {0,0,255}    , {0,0,0}      , {0,0,0}      , {170,230,255}, {0,0,0}                     , {170,230,255}, {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      },
 
-    [4] = { {105,255,255}, {105,255,255}, {105,255,255}, {105,255,255}, {105,255,255}, {105,255,255}, {105,255,255}, {105,255,255}, {105,255,255}, {105,255,255}, {105,255,255}, {105,255,255}, {129,255,255}, {129,255,255}, {129,255,255}, {129,255,255}, {129,255,255}, {129,255,255}, {129,255,255}, {129,255,255}, {129,255,255}, {129,255,255}, {129,255,255}, {129,255,255}, {154,255,255}, {154,255,255}, {154,255,255}, {154,255,255}, {154,255,255}, {154,255,255}, {154,255,255}, {154,255,255}, {154,255,255}, {154,255,255}, {154,255,255}, {154,255,255}, {209,126,252}, {209,126,252}, {209,126,252}, {209,126,252}, {209,126,252}, {209,126,252}, {209,126,252}, {209,126,252}, {209,126,252}, {209,126,252}, {209,126,252} },
+/* LAYER = Mac Colemack
+   .-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------.
+   | L15 ESC      | Q            | W            | F            | P            | B            | J            | L            | U            | Y            | OSM SHIFT    | L14 ENTER    |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | CTRL TAB     | L9 A         | ALT T        | GUI T        | SHIFT T      | G            | M            | SHIFT N      | GUI E        | ALT I        | L9 O         | APOST QUOTE  |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | HYPER F16    | L11 Z        | X            | C            | D            | V            | K            | H            | COMMA        | FULL STOP    | UP           | COLON SEMICLN|
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | CTRL F18     | ALT F19      | GUI F17      | L8 DELETE    | LOWER BACKSPC| SPACE                       | RAISE ENTER  | L13 MINUS    | LEFT         | DOWN         | RIGHT        |
+   '-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------'
+*/
+    [4] = { 
+    {105,255,255} , {105,255,255}, {105,255,255}, {105,255,255}, {105,255,255}, {105,255,255}, {105,255,255}, {105,255,255}, {105,255,255}, {105,255,255}, {105,255,255}, {105,255,255}, 
+    {129,255,255} , {129,255,255}, {129,255,255}, {129,255,255}, {129,255,255}, {129,255,255}, {129,255,255}, {129,255,255}, {129,255,255}, {129,255,255}, {129,255,255}, {129,255,255}, 
+    {170,230,255} , {170,230,255}, {170,230,255}, {170,230,255}, {170,230,255}, {170,230,255}, {170,230,255}, {170,230,255}, {170,230,255}, {170,230,255}, {170,230,255}, {170,230,255}, 
+    {209,255,255} , {209,255,255}, {209,255,255}, {209,255,255}, {209,255,255}, {209,255,255}               , {209,255,255}, {209,255,255}, {209,255,255}, {209,255,255}, {209,255,255} },
 
-    [5] = { {0,0,0}, {0,0,0}, {0,0,0}, {105,255,255}, {0,0,0}, {0,0,0}, {0,0,0}, {105,255,255}, {105,255,255}, {105,255,255}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {129,255,255}, {129,255,255}, {129,255,255}, {0,0,0}, {0,0,0}, {129,255,255}, {129,255,255}, {129,255,255}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {154,255,255}, {154,255,255}, {154,255,255}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {154,255,255}, {0,0,0}, {209,126,252}, {0,0,0}, {0,0,0}, {0,0,255}, {0,0,255} },
+/* LAYER = Mac Colemack
+   .-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------.
+   | L15 ESC      | Q            | W            | F            | P            | B            | J            | L            | U            | Y            | OSM SHIFT    | L14 ENTER    |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | CTRL TAB     | L9 A         | ALT T        | GUI T        | SHIFT T      | G            | M            | SHIFT N      | GUI E        | ALT I        | L9 O         | APOST QUOTE  |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | HYPER F16    | L11 Z        | X            | C            | D            | V            | K            | H            | COMMA        | FULL STOP    | UP           | COLON SEMICLN|
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | CTRL F18     | ALT F19      | GUI F17      | L8 DELETE    | LOWER BACKSPC| SPACE                       | RAISE ENTER  | L13 MINUS    | LEFT         | DOWN         | RIGHT        |
+   '-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------'
+*/
+    [5] = { 
+    {0,0,0}       , {0,0,0}      , {0,0,0}      , {105,255,255}, {0,0,0}      , {0,0,0}      , {0,0,0}      , {105,255,255}, {105,255,255}, {105,255,255}, {0,0,0}      , {0,0,0}      , 
+    {0,0,0}       , {0,0,0}      , {129,255,255}, {129,255,255}, {129,255,255}, {0,0,0}      , {0,0,0}      , {129,255,255}, {129,255,255}, {129,255,255}, {0,0,0}      , {0,0,0}      , 
+    {0,0,0}       , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {170,230,255}, {170,230,255}, {170,230,255}, {0,0,0}      , {0,0,0}      , 
+    {0,0,0}       , {0,0,0}      , {0,0,0}      , {0,0,0}      , {170,230,255}, {0,0,0}                     , {209,255,255}, {0,0,0}      , {0,0,0}      , {0,0,255}    , {0,0,255}    },
 
-    [6] = { {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {105,255,255}, {0,0,0}, {0,0,255}, {0,0,0}, {0,0,0}, {105,255,255}, {249,228,255}, {35,255,255}, {154,255,255}, {0,0,0}, {0,0,0}, {129,255,255}, {129,255,255}, {129,255,255}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {249,228,255}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0} },
+/* LAYER = Mac Colemack
+   .-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------.
+   | L15 ESC      | Q            | W            | F            | P            | B            | J            | L            | U            | Y            | OSM SHIFT    | L14 ENTER    |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | CTRL TAB     | L9 A         | ALT T        | GUI T        | SHIFT T      | G            | M            | SHIFT N      | GUI E        | ALT I        | L9 O         | APOST QUOTE  |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | HYPER F16    | L11 Z        | X            | C            | D            | V            | K            | H            | COMMA        | FULL STOP    | UP           | COLON SEMICLN|
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | CTRL F18     | ALT F19      | GUI F17      | L8 DELETE    | LOWER BACKSPC| SPACE                       | RAISE ENTER  | L13 MINUS    | LEFT         | DOWN         | RIGHT        |
+   '-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------'
+*/
+    [6] = { 
+    {0,0,0}       , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {105,255,255}, {0,0,0}      , {0,0,255}    , {0,0,0}      , 
+    {0,0,0}       , {105,255,255}, {249,255,255}, {35,255,255} , {170,230,255}, {0,0,0}      , {0,0,0}      , {129,255,255}, {129,255,255}, {129,255,255}, {0,0,0}      , {0,0,0}      , 
+    {0,0,0}       , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , 
+    {0,0,0}       , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}                     , {249,255,255}, {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      },
 
-    [8] = { {105,255,255}, {105,255,255}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,255}, {105,255,255}, {105,255,255}, {105,255,255}, {0,0,0}, {0,0,0}, {129,255,255}, {129,255,255}, {129,255,255}, {129,255,255}, {129,255,255}, {0,0,0}, {0,0,255}, {129,255,255}, {129,255,255}, {129,255,255}, {0,0,0}, {0,0,0}, {154,255,255}, {154,255,255}, {154,255,255}, {154,255,255}, {154,255,255}, {0,0,0}, {0,0,255}, {154,255,255}, {154,255,255}, {154,255,255}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {209,126,252}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0} },
+/* LAYER = Mac Colemack
+   .-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------.
+   | L15 ESC      | Q            | W            | F            | P            | B            | J            | L            | U            | Y            | OSM SHIFT    | L14 ENTER    |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | CTRL TAB     | L9 A         | ALT T        | GUI T        | SHIFT T      | G            | M            | SHIFT N      | GUI E        | ALT I        | L9 O         | APOST QUOTE  |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | HYPER F16    | L11 Z        | X            | C            | D            | V            | K            | H            | COMMA        | FULL STOP    | UP           | COLON SEMICLN|
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | CTRL F18     | ALT F19      | GUI F17      | L8 DELETE    | LOWER BACKSPC| SPACE                       | RAISE ENTER  | L13 MINUS    | LEFT         | DOWN         | RIGHT        |
+   '-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------'
+*/
+    [8] = { 
+    {0,0,0}       , {0,0,0}      , {105,255,255}, {105,255,255}, {105,255,255}, {0,0,0}      , {0,0,0}      , {105,255,255}, {105,255,255}, {105,255,255}, {0,0,0}      , {0,0,0}      , 
+    {0,0,0}       , {0,0,0}      , {129,255,255}, {129,255,255}, {129,255,255}, {0,0,0}      , {0,0,255}    , {129,255,255}, {129,255,255}, {129,255,255}, {0,0,0}      , {0,0,0}      , 
+    {0,0,0}       , {0,0,0}      , {170,230,255}, {170,230,255}, {170,230,255}, {0,0,0}      , {0,0,255}    , {170,230,255}, {170,230,255}, {170,230,255}, {0,0,0}      , {0,0,0}      , 
+    {0,0,0}       , {0,0,0}      , {0,0,0}      , {0,0,0}      , {209,255,255}, {0,0,0}                     , {209,255,255}, {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      },
 
-    [9] = { {0,0,0}, {0,0,0}, {249,251,145}, {249,228,255}, {26,244,252}, {41,255,255}, {41,255,255}, {26,244,252}, {249,228,255}, {249,251,145}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {249,251,145}, {249,228,255}, {26,244,252}, {41,255,255}, {41,255,255}, {26,244,252}, {249,228,255}, {249,251,145}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {249,251,145}, {249,228,255}, {26,244,252}, {41,255,255}, {41,255,255}, {26,244,252}, {249,228,255}, {249,251,145}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {154,255,255}, {154,255,255}, {154,255,77}, {154,255,255}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0} },
+/* LAYER = Mac Colemack
+   .-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------.
+   | L15 ESC      | Q            | W            | F            | P            | B            | J            | L            | U            | Y            | OSM SHIFT    | L14 ENTER    |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | CTRL TAB     | L9 A         | ALT T        | GUI T        | SHIFT T      | G            | M            | SHIFT N      | GUI E        | ALT I        | L9 O         | APOST QUOTE  |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | HYPER F16    | L11 Z        | X            | C            | D            | V            | K            | H            | COMMA        | FULL STOP    | UP           | COLON SEMICLN|
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | CTRL F18     | ALT F19      | GUI F17      | L8 DELETE    | LOWER BACKSPC| SPACE                       | RAISE ENTER  | L13 MINUS    | LEFT         | DOWN         | RIGHT        |
+   '-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------'
+*/
+    [9] = { 
+    {0,0,0}       , {0,0,0}      , {255,255,255}, {249,255,255}, {26,255,255} , {35,255,255} , {35,255,255} , {26,255,255} , {249,255,255}, {255,255,255}, {0,0,0}      , {0,0,0}      , 
+    {0,0,0}       , {0,0,0}      , {255,255,255}, {249,255,255}, {26,255,255} , {35,255,255} , {35,255,255} , {26,255,255} , {249,255,255}, {255,255,255}, {0,0,0}      , {0,0,0}      , 
+    {0,0,0}       , {0,0,0}      , {255,255,255}, {249,255,255}, {26,255,255} , {35,255,255} , {35,255,255} , {26,255,255} , {249,255,255}, {255,255,255}, {0,0,0}      , {0,0,0}      , 
+    {0,0,0}       , {0,0,0}      , {0,0,0}      , {170,230,255}, {170,230,255}, {170,230,255}               , {170,230,255}, {249,255,255}, {249,255,255}, {0,0,0}      , {0,0,0}      },
 
-    [10] = { {0,0,0}, {0,0,0}, {0,0,0}, {249,228,255}, {26,244,252}, {41,255,255}, {41,255,255}, {26,244,252}, {249,228,255}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {249,251,145}, {249,228,255}, {26,244,252}, {41,255,255}, {41,255,255}, {26,244,252}, {249,228,255}, {249,251,145}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {249,251,145}, {249,228,255}, {26,244,252}, {41,255,255}, {41,255,255}, {26,244,252}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {154,255,255}, {154,255,255}, {154,255,77}, {154,255,255}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0} },
+/* LAYER = Mac Colemack
+   .-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------.
+   | L15 ESC      | Q            | W            | F            | P            | B            | J            | L            | U            | Y            | OSM SHIFT    | L14 ENTER    |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | CTRL TAB     | L9 A         | ALT T        | GUI T        | SHIFT T      | G            | M            | SHIFT N      | GUI E        | ALT I        | L9 O         | APOST QUOTE  |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | HYPER F16    | L11 Z        | X            | C            | D            | V            | K            | H            | COMMA        | FULL STOP    | UP           | COLON SEMICLN|
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | CTRL F18     | ALT F19      | GUI F17      | L8 DELETE    | LOWER BACKSPC| SPACE                       | RAISE ENTER  | L13 MINUS    | LEFT         | DOWN         | RIGHT        |
+   '-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------'
+*/
+    [10] = { 
+    {0,0,0}       , {0,0,0}      , {255,255,255}, {249,255,255}, {26,255,255} , {35,255,255} , {35,255,255} , {26,255,255} , {249,255,255}, {255,255,255}, {0,0,0}      , {0,0,0}      , 
+    {0,0,0}       , {0,0,0}      , {255,255,255}, {249,255,255}, {26,255,255} , {35,255,255} , {35,255,255} , {26,255,255} , {249,255,255}, {255,255,255}, {0,0,0}      , {0,0,0}      , 
+    {0,0,0}       , {0,0,0}      , {255,255,255}, {249,255,255}, {26,255,255} , {35,255,255} , {35,255,255} , {26,255,255} , {249,255,255}, {255,255,255}, {0,0,0}      , {0,0,0}      , 
+    {0,0,0}       , {0,0,0}      , {0,0,0}      , {170,230,255}, {170,230,255}, {170,230,255}               , {170,230,255}, {249,255,255}, {249,255,255}, {0,0,0}      , {0,0,0}      },
 
-    [11] = { {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {249,251,145}, {249,228,255}, {26,244,252}, {35,255,255}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,204,255}, {0,204,255}, {0,251,143}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0} },
+/* LAYER = Mac Colemack
+   .-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------.
+   | L15 ESC      | Q            | W            | F            | P            | B            | J            | L            | U            | Y            | OSM SHIFT    | L14 ENTER    |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | CTRL TAB     | L9 A         | ALT T        | GUI T        | SHIFT T      | G            | M            | SHIFT N      | GUI E        | ALT I        | L9 O         | APOST QUOTE  |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | HYPER F16    | L11 Z        | X            | C            | D            | V            | K            | H            | COMMA        | FULL STOP    | UP           | COLON SEMICLN|
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | CTRL F18     | ALT F19      | GUI F17      | L8 DELETE    | LOWER BACKSPC| SPACE                       | RAISE ENTER  | L13 MINUS    | LEFT         | DOWN         | RIGHT        |
+   '-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------'
+*/
+    [11] = { 
+    {0,0,0}       , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , 
+    {0,0,0}       , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      ,
+    {0,0,0}       , {0,0,0}      , {249,255,255}, {249,255,255}, {26,255,255} , {35,255,255} , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      ,
+    {0,0,0}       , {0,0,0}      , {0,0,0}      , {0,255,255}  , {0,255,255}  , {0,255,143}                 , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      },
 
-    [12] = { {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {249,251,145}, {249,228,255}, {26,244,252}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,204,255}, {0,204,255}, {0,251,143}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0} },
+/* LAYER = Mac Colemack
+   .-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------.
+   | L15 ESC      | Q            | W            | F            | P            | B            | J            | L            | U            | Y            | OSM SHIFT    | L14 ENTER    |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | CTRL TAB     | L9 A         | ALT T        | GUI T        | SHIFT T      | G            | M            | SHIFT N      | GUI E        | ALT I        | L9 O         | APOST QUOTE  |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | HYPER F16    | L11 Z        | X            | C            | D            | V            | K            | H            | COMMA        | FULL STOP    | UP           | COLON SEMICLN|
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | CTRL F18     | ALT F19      | GUI F17      | L8 DELETE    | LOWER BACKSPC| SPACE                       | RAISE ENTER  | L13 MINUS    | LEFT         | DOWN         | RIGHT        |
+   '-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------'
+*/
+    [12] = { 
+    {0,0,0}       , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , 
+    {0,0,0}       , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , 
+    {0,0,0}       , {0,0,0}      , {249,255,255}, {249,255,255}, {26,255,255} , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , 
+    {0,0,0}       , {0,0,0}      , {0,0,0}      , {0,255,255}  , {0,255,255}  , {0,255,143}                 , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      },
 
-    [13] = { {0,0,0}, {0,0,0}, {105,255,255}, {105,255,255}, {105,255,255}, {0,0,0}, {0,0,0}, {105,255,255}, {105,255,255}, {105,255,255}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {129,255,255}, {129,255,255}, {129,255,255}, {0,0,0}, {0,0,0}, {129,255,255}, {129,255,255}, {129,255,255}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {154,255,255}, {154,255,255}, {154,255,255}, {0,0,0}, {0,0,0}, {154,255,255}, {154,255,255}, {154,255,255}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {209,126,252}, {0,0,0}, {0,0,0}, {0,0,0}, {209,126,252}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0} },
+/* LAYER = Mac Colemack
+   .-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------.
+   | L15 ESC      | Q            | W            | F            | P            | B            | J            | L            | U            | Y            | OSM SHIFT    | L14 ENTER    |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | CTRL TAB     | L9 A         | ALT T        | GUI T        | SHIFT T      | G            | M            | SHIFT N      | GUI E        | ALT I        | L9 O         | APOST QUOTE  |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | HYPER F16    | L11 Z        | X            | C            | D            | V            | K            | H            | COMMA        | FULL STOP    | UP           | COLON SEMICLN|
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | CTRL F18     | ALT F19      | GUI F17      | L8 DELETE    | LOWER BACKSPC| SPACE                       | RAISE ENTER  | L13 MINUS    | LEFT         | DOWN         | RIGHT        |
+   '-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------'
+*/
+    [13] = { 
+    {0,0,0}       , {0,0,0}      , {105,255,255}, {105,255,255}, {105,255,255}, {0,0,0}      , {0,0,0}      , {105,255,255}, {105,255,255}, {105,255,255}, {0,0,0}      , {0,0,0}      , 
+    {0,0,0}       , {0,0,0}      , {129,255,255}, {129,255,255}, {129,255,255}, {0,0,0}      , {0,0,0}      , {129,255,255}, {129,255,255}, {129,255,255}, {0,0,0}      , {0,0,0}      , 
+    {0,0,0}       , {0,0,0}      , {170,230,255}, {170,230,255}, {170,230,255}, {0,0,0}      , {0,0,0}      , {170,230,255}, {170,230,255}, {170,230,255}, {0,0,0}      , {0,0,0}      , 
+    {0,0,0}       , {0,0,0}      , {209,255,255}, {0,0,0}      , {0,0,0}      , {0,0,0}                     , {209,255,255}, {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      },
 
-    [14] = { {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,255}, {0,0,255}, {0,0,255}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,255}, {0,0,255}, {0,0,255}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0} },
+/* LAYER = Mac Colemack
+   .-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------.
+   | L15 ESC      | Q            | W            | F            | P            | B            | J            | L            | U            | Y            | OSM SHIFT    | L14 ENTER    |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | CTRL TAB     | L9 A         | ALT T        | GUI T        | SHIFT T      | G            | M            | SHIFT N      | GUI E        | ALT I        | L9 O         | APOST QUOTE  |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | HYPER F16    | L11 Z        | X            | C            | D            | V            | K            | H            | COMMA        | FULL STOP    | UP           | COLON SEMICLN|
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | CTRL F18     | ALT F19      | GUI F17      | L8 DELETE    | LOWER BACKSPC| SPACE                       | RAISE ENTER  | L13 MINUS    | LEFT         | DOWN         | RIGHT        |
+   '-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------'
+*/
+    [14] = { 
+    {0,0,0}       , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,255}    , {0,0,255}    , {0,0,255}    , {0,0,0}      , 
+    {0,0,0}       , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , 
+    {0,0,0}       , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , 
+    {0,0,0}       , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,255}    , {0,0,255}                   , {0,0,255}    , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      },
 
-    [15] = { {0,0,0}, {35,255,255}, {209,126,252}, {0,183,238}, {0,183,238}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0} },
+/* LAYER = Mac Colemack
+   .-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------.
+   | L15 ESC      | Q            | W            | F            | P            | B            | J            | L            | U            | Y            | OSM SHIFT    | L14 ENTER    |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | CTRL TAB     | L9 A         | ALT T        | GUI T        | SHIFT T      | G            | M            | SHIFT N      | GUI E        | ALT I        | L9 O         | APOST QUOTE  |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | HYPER F16    | L11 Z        | X            | C            | D            | V            | K            | H            | COMMA        | FULL STOP    | UP           | COLON SEMICLN|
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | CTRL F18     | ALT F19      | GUI F17      | L8 DELETE    | LOWER BACKSPC| SPACE                       | RAISE ENTER  | L13 MINUS    | LEFT         | DOWN         | RIGHT        |
+   '-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------'
+*/
+    [15] = { 
+    {0,0,0}       , {35,255,255} , {209,255,255}, {0,255,255}  , {0,255,255}  , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , 
+    {0,0,0}       , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , 
+    {0,0,0}       , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , 
+    {0,0,0}       , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}                     , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      },
 
-    [16] = { {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,255}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,255}, {0,0,255}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,255}, {0,0,255}, {0,0,255}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,183,238}, {0,0,0}, {0,0,0}, {0,0,0} },
+/* LAYER = Mac Colemack
+   .-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------.
+   | L15 ESC      | Q            | W            | F            | P            | B            | J            | L            | U            | Y            | OSM SHIFT    | L14 ENTER    |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | CTRL TAB     | L9 A         | ALT T        | GUI T        | SHIFT T      | G            | M            | SHIFT N      | GUI E        | ALT I        | L9 O         | APOST QUOTE  |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | HYPER F16    | L11 Z        | X            | C            | D            | V            | K            | H            | COMMA        | FULL STOP    | UP           | COLON SEMICLN|
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | CTRL F18     | ALT F19      | GUI F17      | L8 DELETE    | LOWER BACKSPC| SPACE                       | RAISE ENTER  | L13 MINUS    | LEFT         | DOWN         | RIGHT        |
+   '-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------'
+*/
+    [16] = { 
+    {0,0,0}       , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,255}    , {0,0,0}      , {0,0,0}      , {0,0,0}      , 
+    {0,0,0}       , {0,0,0}      , {0,0,255}    , {0,0,255}    , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,255}    , {0,0,255}    , {0,0,255}    , {0,0,0}      , {0,0,0}      , 
+    {0,0,0}       , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , 
+    {0,0,0}       , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}                     , {0,0,0}      , {0,255,255}  , {0,0,0}      , {0,0,0}      , {0,0,0}      },
 
-    [17] = { {0,3,69}, {0,3,69}, {0,255,255}, {0,3,69}, {0,3,69}, {0,3,69}, {0,3,69}, {0,3,69}, {0,3,69}, {0,3,69}, {0,3,69}, {0,3,69}, {0,3,69}, {0,255,255}, {0,255,255}, {0,255,255}, {0,3,69}, {0,3,69}, {0,3,69}, {0,3,69}, {0,3,69}, {0,3,69}, {0,3,69}, {0,3,69}, {0,3,69}, {0,3,69}, {0,3,69}, {0,3,69}, {0,3,69}, {0,3,69}, {0,3,69}, {0,3,69}, {0,3,69}, {0,3,69}, {0,3,69}, {0,3,69}, {0,3,69}, {0,3,69}, {0,3,69}, {0,3,69}, {0,3,69}, {0,3,69}, {0,3,69}, {0,255,255}, {0,3,69}, {0,3,69}, {0,3,69} },
+/* LAYER = Mac Colemack
+   .-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------.
+   | L15 ESC      | Q            | W            | F            | P            | B            | J            | L            | U            | Y            | OSM SHIFT    | L14 ENTER    |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | CTRL TAB     | L9 A         | ALT T        | GUI T        | SHIFT T      | G            | M            | SHIFT N      | GUI E        | ALT I        | L9 O         | APOST QUOTE  |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | HYPER F16    | L11 Z        | X            | C            | D            | V            | K            | H            | COMMA        | FULL STOP    | UP           | COLON SEMICLN|
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | CTRL F18     | ALT F19      | GUI F17      | L8 DELETE    | LOWER BACKSPC| SPACE                       | RAISE ENTER  | L13 MINUS    | LEFT         | DOWN         | RIGHT        |
+   '-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------'
+*/
+    [17] = { 
+    {0,3,69}      , {0,3,69}     , {0,255,255}  , {0,3,69}     , {0,3,69}     , {0,3,69}     , {0,3,69}     , {0,3,69}     , {0,3,69}     , {0,3,69}     , {0,3,69}     , {0,3,69}     , 
+    {0,3,69}      , {0,255,255}  , {0,255,255}  , {0,255,255}  , {0,3,69}     , {0,3,69}     , {0,3,69}     , {0,3,69}     , {0,3,69}     , {0,3,69}     , {0,3,69}     , {0,3,69}     , 
+    {0,3,69}      , {0,3,69}     , {0,3,69}     , {0,3,69}     , {0,3,69}     , {0,3,69}     , {0,3,69}     , {0,3,69}     , {0,3,69}     , {0,3,69}     , {0,3,69}     , {0,3,69}     , 
+    {0,3,69}      , {0,3,69}     , {0,3,69}     , {0,3,69}     , {0,3,69}     , {0,3,69}                    , {0,3,69}     , {0,255,255}  , {0,3,69}     , {0,3,69}     , {0,3,69}     },
 
-    [18] = { {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,255,255}, {0,255,255}, {0,183,238}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,255,255}, {0,255,255}, {0,255,255}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,255,255}, {0,255,255}, {0,255,255}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0}, {0,255,255}, {0,0,0}, {0,0,0}, {0,0,0}, {0,0,0} },
+/* LAYER = Mac Colemack
+   .-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------.
+   | L15 ESC      | Q            | W            | F            | P            | B            | J            | L            | U            | Y            | OSM SHIFT    | L14 ENTER    |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | CTRL TAB     | L9 A         | ALT T        | GUI T        | SHIFT T      | G            | M            | SHIFT N      | GUI E        | ALT I        | L9 O         | APOST QUOTE  |
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | HYPER F16    | L11 Z        | X            | C            | D            | V            | K            | H            | COMMA        | FULL STOP    | UP           | COLON SEMICLN|
+   |--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------|
+   | CTRL F18     | ALT F19      | GUI F17      | L8 DELETE    | LOWER BACKSPC| SPACE                       | RAISE ENTER  | L13 MINUS    | LEFT         | DOWN         | RIGHT        |
+   '-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------'
+*/
+    [18] = { 
+    {0,0,0}       , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,255,255}  , {0,255,255}  , {0,255,255}  , {0,0,0}      , {0,0,0}      , 
+    {0,0,0}       , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,255,255}  , {0,255,255}  , {0,255,255}  , {0,0,0}      , {0,0,0}      , 
+    {0,0,0}       , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,255,255}  , {0,255,255}  , {0,255,255}  , {0,0,0}      , {0,0,0}      , 
+    {0,0,0}       , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}                     , {0,255,255}  , {0,0,0}      , {0,0,0}      , {0,0,0}      , {0,0,0}      },
 
 };
 
@@ -266,12 +819,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         rgblight_mode(1);
       }
       return false;
-    case QMKBEST:
+    case RANSWORLD:
       if (record->event.pressed) {
-        // when keycode QMKBEST is pressed
-        SEND_STRING("QMK is the best thing ever!");
+        SEND_STRING("ransworld@gmail.com");
       } else {
-        // when keycode QMKBEST is released
       }
       break;
     case EMDASH:
@@ -286,6 +837,30 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       } else {
       }
       break;
+    case CENT:
+      if (record->event.pressed) {
+        SEND_STRING(SS_LALT(SS_TAP(X_KP_0) SS_TAP(X_KP_1) SS_TAP(X_KP_6) SS_TAP(X_KP_2)));
+      } else {
+      }
+      break;
+    case DEGREES:
+      if (record->event.pressed) {
+        SEND_STRING(SS_LALT(SS_TAP(X_KP_0) SS_TAP(X_KP_1) SS_TAP(X_KP_7) SS_TAP(X_KP_6)));
+      } else {
+      }
+      break;
+    case MINUS1:
+      if (record->event.pressed) {
+        SEND_STRING(SS_TAP(X_MINUS) SS_TAP(X_KP_1) SS_TAP(X_TAB));
+      } else {
+      }
+      break;
+    case MINUS3:
+      if (record->event.pressed) {
+        SEND_STRING(SS_TAP(X_MINUS) SS_TAP(X_KP_3) SS_TAP(X_TAB));
+      } else {
+      }
+      break;
   }
   return true;
 }
@@ -296,33 +871,6 @@ const uint32_t PROGMEM unicode_map[] = {
     [IRONY] = 0x2E2E,  // ⸮
     [SNEK]  = 0x1F40D, // 🐍
 };
-
-//Tap Dance start
-void dance_cln_finished (qk_tap_dance_state_t *state, void *user_data) {
-  if (state->count == 1) {
-    register_code (KC_RSFT);
-    register_code (KC_SCLN);
-  } else {
-    register_code (KC_SCLN);
-  }
-}
-
-void dance_cln_reset (qk_tap_dance_state_t *state, void *user_data) {
-  if (state->count == 1) {
-    unregister_code (KC_RSFT);
-    unregister_code (KC_SCLN);
-  } else {
-    unregister_code (KC_SCLN);
-  }
-}
-
-//All tap dance functions would go here. Only showing this one.
-qk_tap_dance_action_t tap_dance_actions[] = {
- [CT_CLN] = ACTION_TAP_DANCE_FN_ADVANCED (NULL, dance_cln_finished, dance_cln_reset)
- ,[CT_SE]  = ACTION_TAP_DANCE_DOUBLE (KC_SPC, KC_ENT)
- ,[X_CTL]     = ACTION_TAP_DANCE_FN_ADVANCED(NULL,x_finished, x_reset)
-};
-//Tap Dance finish
 
 #ifdef AUDIO_ENABLE
 bool muse_mode = false;
@@ -398,60 +946,69 @@ uint32_t layer_state_set_user(uint32_t state) {
     return update_tri_layer_state(state, _LOWER, _RAISE, _ADJUST);
 }
 
-/* Return an integer that corresponds to what kind of tap dance should be executed.
- *
- * How to figure out tap dance state: interrupted and pressed.
- *
- * Interrupted: If the state of a dance dance is "interrupted", that means that another key has been hit
- *  under the tapping term. This is typically indicitive that you are trying to "tap" the key.
- *
- * Pressed: Whether or not the key is still being pressed. If this value is true, that means the tapping term
- *  has ended, but the key is still being pressed down. This generally means the key is being "held".
- *
- * One thing that is currenlty not possible with qmk software in regards to tap dance is to mimic the "permissive hold"
- *  feature. In general, advanced tap dances do not work well if they are used with commonly typed letters.
- *  For example "A". Tap dances are best used on non-letter keys that are not hit while typing letters.
- *
- * Good places to put an advanced tap dance:
- *  z,q,x,j,k,v,b, any function key, home/end, comma, semi-colon
- *
- * Criteria for "good placement" of a tap dance key:
- *  Not a key that is hit frequently in a sentence
- *  Not a key that is used frequently to double tap, for example 'tab' is often double tapped in a terminal, or
- *    in a web form. So 'tab' would be a poor choice for a tap dance.
- *  Letters used in common words as a double. For example 'p' in 'pepper'. If a tap dance function existed on the
- *    letter 'p', the word 'pepper' would be quite frustating to type.
- *
- * For the third point, there does exist the 'DOUBLE_SINGLE_TAP', however this is not fully tested
- *
- */
+//Tap Dance start
+void dance_cln_finished (qk_tap_dance_state_t *state, void *user_data) {
+  if (state->count == 1) {
+    register_code (KC_RSFT);
+    register_code (KC_SCLN);
+  } else {
+    register_code (KC_SCLN);
+  }
+}
+
+void dance_cln_reset (qk_tap_dance_state_t *state, void *user_data) {
+  if (state->count == 1) {
+    unregister_code (KC_RSFT);
+    unregister_code (KC_SCLN);
+  } else {
+    unregister_code (KC_SCLN);
+  }
+}
+
+void dance_apost_finished (qk_tap_dance_state_t *state, void *user_data) {
+  if (state->count == 1) {
+    register_code (KC_QUOT);
+  } else {
+    register_code (KC_RSFT);
+    register_code (KC_QUOT);
+  }
+}
+
+void dance_apost_reset (qk_tap_dance_state_t *state, void *user_data) {
+  if (state->count == 1) {
+    unregister_code (KC_QUOT);
+  } else {
+    unregister_code (KC_RSFT);
+    unregister_code (KC_QUOT);
+  }
+}
+
+qk_tap_dance_action_t tap_dance_actions[] = {
+ [CT_CLN] = ACTION_TAP_DANCE_FN_ADVANCED (NULL, dance_cln_finished, dance_cln_reset)
+ ,[CT_APOST] = ACTION_TAP_DANCE_FN_ADVANCED (NULL, dance_apost_finished, dance_apost_reset)
+ ,[CT_SE] = ACTION_TAP_DANCE_DOUBLE (KC_SPC, KC_ENT)
+ ,[X_CTL] = ACTION_TAP_DANCE_FN_ADVANCED(NULL,x_finished, x_reset)
+ ,[APOST_CTL] = ACTION_TAP_DANCE_FN_ADVANCED(NULL,apost_finished, apost_reset)
+ ,[SPACE_SHIFT] = ACTION_TAP_DANCE_FN_ADVANCED(NULL,space_finished, space_reset)
+};
+
 int cur_dance (qk_tap_dance_state_t *state) {
   if (state->count == 1) {
     if (state->interrupted || !state->pressed)  return SINGLE_TAP;
-    //key has not been interrupted, but they key is still held. Means you want to send a 'HOLD'.
     else return SINGLE_HOLD;
   }
   else if (state->count == 2) {
-    /*
-     * DOUBLE_SINGLE_TAP is to distinguish between typing "pepper", and actually wanting a double tap
-     * action when hitting 'pp'. Suggested use case for this return value is when you want to send two
-     * keystrokes of the key, and not the 'double tap' action/macro.
-    */
     if (state->interrupted) return DOUBLE_SINGLE_TAP;
     else if (state->pressed) return DOUBLE_HOLD;
     else return DOUBLE_TAP;
   }
-  //Assumes no one is trying to type the same letter three times (at least not quickly).
-  //If your tap dance key is 'KC_W', and you want to type "www." quickly - then you will need to add
-  //an exception here to return a 'TRIPLE_SINGLE_TAP', and define that enum just like 'DOUBLE_SINGLE_TAP'
   if (state->count == 3) {
     if (state->interrupted || !state->pressed)  return TRIPLE_TAP;
     else return TRIPLE_HOLD;
   }
-  else return 8; //magic number. At some point this method will expand to work for more presses
+  else return 8;
 }
 
-//instanalize an instance of 'tap' for the 'x' tap dance.
 static tap xtap_state = {
   .is_press_action = true,
   .state = 0
@@ -465,9 +1022,6 @@ void x_finished (qk_tap_dance_state_t *state, void *user_data) {
     case DOUBLE_TAP: register_code(KC_ESC); break;
     case DOUBLE_HOLD: register_code(KC_LALT); break;
     case DOUBLE_SINGLE_TAP: register_code(KC_X); unregister_code(KC_X); register_code(KC_X);
-    //Last case is for fast typing. Assuming your key is `f`:
-    //For example, when typing the word `buffer`, and you want to make sure that you send `ff` and not `Esc`.
-    //In order to type `ff` when typing fast, the next character will have to be hit within the `TAPPING_TERM`, which by default is 200ms.
   }
 }
 
@@ -481,3 +1035,56 @@ void x_reset (qk_tap_dance_state_t *state, void *user_data) {
   }
   xtap_state.state = 0;
 }
+
+static tap aposttap_state = {
+  .is_press_action = true,
+  .state = 0
+};
+
+void apost_finished (qk_tap_dance_state_t *state, void *user_data) {
+  aposttap_state.state = cur_dance(state);
+  switch (aposttap_state.state) {
+    case SINGLE_TAP: register_code(KC_QUOT); break;
+    case SINGLE_HOLD: register_code(KC_LCTRL); break;
+    case DOUBLE_TAP: register_code(KC_X); break;
+    case DOUBLE_HOLD: register_code(KC_LALT); break;
+    case DOUBLE_SINGLE_TAP: register_code(KC_QUOT); unregister_code(KC_QUOT); register_code(KC_QUOT);
+    case TRIPLE_TAP: register_code(KC_Z);
+  }
+}
+
+void apost_reset (qk_tap_dance_state_t *state, void *user_data) {
+  switch (aposttap_state.state) {
+    case SINGLE_TAP: unregister_code(KC_QUOT); break;
+    case SINGLE_HOLD: unregister_code(KC_LCTRL); break;
+    case DOUBLE_TAP: unregister_code(KC_X); break;
+    case DOUBLE_HOLD: unregister_code(KC_LALT);
+    case DOUBLE_SINGLE_TAP: unregister_code(KC_QUOT);
+    case TRIPLE_TAP: unregister_code(KC_Z);
+  }
+  aposttap_state.state = 0;
+}
+
+static tap spacetap_state = {
+  .is_press_action = true,
+  .state = 0
+};
+
+void space_finished (qk_tap_dance_state_t *state, void *user_data) {
+  spacetap_state.state = cur_dance(state);
+  switch (spacetap_state.state) {
+    case SINGLE_TAP: register_code(KC_SPC); break;
+    case SINGLE_HOLD: register_code(KC_LSFT); break;
+    case DOUBLE_TAP: register_code(KC_MINS); break;
+  }
+}
+
+void space_reset (qk_tap_dance_state_t *state, void *user_data) {
+  switch (spacetap_state.state) {
+    case SINGLE_TAP: unregister_code(KC_SPC); break;
+    case SINGLE_HOLD: unregister_code(KC_LSFT); break;
+    case DOUBLE_TAP: unregister_code(KC_MINS); break;
+  }
+  spacetap_state.state = 0;
+}
+//Tap dance finish
